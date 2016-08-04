@@ -1,9 +1,0 @@
-#!/gpfs_home/pemathie/src/summer16/hera-noise/test3/bin/python
-# EASY-INSTALL-ENTRY-SCRIPT: 'setuptools==25.1.4','console_scripts','easy_install'
-__requires__ = 'setuptools==25.1.4'
-import sys
-from pkg_resources import load_entry_point
-
-sys.exit(
-   load_entry_point('setuptools==25.1.4', 'console_scripts', 'easy_install')()
-)
