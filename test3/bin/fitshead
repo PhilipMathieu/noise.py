@@ -1,0 +1,10 @@
+#!/gpfs_home/pemathie/src/summer16/hera-noise/test3/bin/python
+# EASY-INSTALL-ENTRY-SCRIPT: 'pyfits==3.4','console_scripts','fitshead'
+__requires__ = 'pyfits==3.4'
+import sys
+from pkg_resources import load_entry_point
+
+if __name__ == '__main__':
+    sys.exit(
+        load_entry_point('pyfits==3.4', 'console_scripts', 'fitshead')()
+    )
