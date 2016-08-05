@@ -2,6 +2,7 @@
 from uvdata.uv import UVData
 import argparse
 import os
+import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument('mir', help='Path of input Miriad file')
@@ -14,7 +15,7 @@ print "File read."
 uv.data_array_odd = uv.data_array[:,:,0::2,:]
 uv.flag_array_odd = uv.flag_array[:,:,0::2,:]
 # omit extra data point if present
-if muv.Nfreqs % 2 == 1:
+if uv.Nfreqs % 2 == 1:
 	uv.data_array_odd = uv.data_array_odd[:,:,:-1,:]
 	uv.flag_array_odd = uv.flag_array_odd[:,:,:-1,:]
 uv.data_array_even = uv.data_array[:,:,1::2,:]
@@ -25,5 +26,6 @@ uv.flag_array = np.logical_or(uv.flag_array_odd,uv.flag_array[:,:,1::2,:])
 print "Flags extended."
 uv.freq_array = uv.freq_array[:,1::2]
 uv.Nfreqs = uv.Nfreqs/2
+uv.data_array = uv.data_array_diff
 print "Writing..."
-uv.write_miriad(args.mir+'N',True,True)
+uv.write_uvfits(args.mir+'N',True,True)
