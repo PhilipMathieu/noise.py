@@ -1,5 +1,8 @@
 # this script installs the required packages in an order that makes pip happy
 pip install numpy
-pip install pyephem pyfits astropy
+pip install scipy pyephem pyfits astropy
 pip install aipy
-# pyuvdata must be installed manually
+if [ -d '~/src/pyuvdata' ]; then
+python ~/src/pyuvdata/setup.py install
+fi
+# pyuvdata must be installed manually if not kept in the ~/src folder
