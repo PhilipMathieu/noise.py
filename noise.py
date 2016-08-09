@@ -59,7 +59,7 @@ def splitByPol(uv,mode='all'):
     if uv.Npols % 2 == 1:
 	    uvo.data_array = uvo.data_array[:,:,:,:-1]
 	    uvo.flag_array = uvo.flag_array[:,:,:,:-1]
-	    uvo.polarization_array = uvo.freq_array[:-1]
+	    uvo.polarization_array = uvo.polarization_array[:-1]
 	    uvo.nsample_array = uvo.nsample_array[:,:,:,:-1]
     uvo.Npols = uv.Npols/2
     uve.Npols = uv.Npols/2
