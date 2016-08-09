@@ -3,7 +3,10 @@ import numpy as np
 from copy import deepcopy
 
 
-def splitByFreq(uv, mode='all'):
+def splitByFreq(uv, mode='all', checks=False):
+    if uv.Nfreqs < 2:
+        print "Not enough frequencies to split!"
+        return
     uvo = deepcopy(uv)
     uve = deepcopy(uv)
     # reading every other
@@ -29,9 +32,13 @@ def splitByFreq(uv, mode='all'):
         uvd.data_array = uvo.data_array - uve.data_array
         uvd.flag_array = np.logical_or(uvo.flag_array, uve.flag_array)
         # label frequencies as the mean frequency (may not be best solution!)
-        uvd.freq_array = np.mean([uvo.freq_array, uve.freq_array])
+        uvd.freq_array = np.mean(np.concatenate(
+            (uvo.freq_array, uve.freq_array), 0), 0).reshape(1, uv.Nfreqs / 2)
         uvd.nsample_array = uvo.nsample_array + uve.nsample_array
         uvd.Nfreqs = uv.Nfreqs / 2
+        if checks:
+            if not(testDiff(uvo, uve, uvd, uv)):
+                return
         if mode == 'diff':
             return uvd
         else:
@@ -44,7 +51,10 @@ def splitByFreq(uv, mode='all'):
         return [uvo, uve]
 
 
-def splitByPol(uv, mode='all'):
+def splitByPol(uv, mode='all', checks=False):
+    if uv.Npols < 2:
+        print "Not enough polarizations to split!"
+        return
     uvo = deepcopy(uv)
     uve = deepcopy(uv)
     # reading every other
@@ -58,13 +68,13 @@ def splitByPol(uv, mode='all'):
     uve.nsample_array = uv.nsample_array[:, :, :, 1::2]
     # omit extra data point if present
     if uv.Npols % 2 == 1:
-	    uvo.data_array = uvo.data_array[:,:,:,:-1]
-	    uvo.flag_array = uvo.flag_array[:,:,:,:-1]
-	    uvo.polarization_array = uvo.polarization_array[:-1]
-	    uvo.nsample_array = uvo.nsample_array[:,:,:,:-1]
-    uvo.Npols = uv.Npols/2
-    uve.Npols = uv.Npols/2
-	# differencing
+        uvo.data_array = uvo.data_array[:, :, :, :-1]
+        uvo.flag_array = uvo.flag_array[:, :, :, :-1]
+        uvo.polarization_array = uvo.polarization_array[:-1]
+        uvo.nsample_array = uvo.nsample_array[:, :, :, :-1]
+    uvo.Npols = uv.Npols / 2
+    uve.Npols = uv.Npols / 2
+    # differencing
     if mode == 'diff' or mode == 'all':
         uvd = deepcopy(uv)
         uvd.data_array = uvo.data_array - uve.data_array
@@ -72,6 +82,9 @@ def splitByPol(uv, mode='all'):
         # NEED TO FIGURE OUT WHAT TO LABEL POLARIZATIONS AS
         uvd.nsample_array = uvo.nsample_array + uve.nsample_array
         uvd.Npols = uv.Npols / 2
+        if checks:
+            if not(testDiff(uvo, uve, uvd, uv)):
+                return
         if mode == 'diff':
             return uvd
         else:
@@ -84,7 +97,10 @@ def splitByPol(uv, mode='all'):
         return [uvo, uve]
 
 
-def splitByTime(uv, mode='all'):
+def splitByTime(uv, mode='all', checks=False):
+    if uv.Ntimes < 2:
+        print "Not enough frequencies to split!"
+        return
     uvo = deepcopy(uv)
     uve = deepcopy(uv)
     # generate masks
@@ -100,12 +116,16 @@ def splitByTime(uv, mode='all'):
     emask1 = emask4[:, 0, 0, 0]
     # 4-d parametersf
     for param in ['data_array', 'flag_array', 'nsample_array']:
-        setattr(uvo, param, getattr(uv, param)[omask4])
-        setattr(uve, param, getattr(uv, param)[emask4])
+        setattr(uvo, param, getattr(uv, param)[omask4].reshape(
+            uv.Ntimes / 2 * uv.Nbls, uv.Nspws, uv.Nfreqs, uv.Npols))
+        setattr(uve, param, getattr(uv, param)[emask4].reshape(
+            uv.Ntimes / 2 * uv.Nbls, uv.Nspws, uv.Nfreqs, uv.Npols))
     # 2-d parameters
     for param in ['uvw_array']:
-        setattr(uvo, param, getattr(uv, param)[np.tile(omask1, (3, 1))])
-        setattr(uve, param, getattr(uv, param)[np.tile(emask1, (3, 1))])
+        setattr(uvo, param, getattr(uv, param)[
+                np.tile(omask1, (3, 1))].reshape(3, uv.Ntimes / 2 * uv.Nbls))
+        setattr(uve, param, getattr(uv, param)[
+                np.tile(emask1, (3, 1))].reshape(3, uv.Ntimes / 2 * uv.Nbls))
     # 1-d parameters
     for param in ['time_array', 'lst_array', 'ant_1_array', 'ant_2_array', 'baseline_array']:
         setattr(uvo, param, getattr(uv, param)[omask1])
@@ -115,16 +135,6 @@ def splitByTime(uv, mode='all'):
     uve.Nblts = np.sum(emask1)
     uvo.Ntimes = uvo.Nblts / uvo.Nbls
     uve.Ntimes = uve.Nblts / uve.Nbls
-    # # tests
-    # if uvo.Ntimes == uve.Ntimes:
-    #     print "Ntimes correct"
-    # else:
-    #     print "Ntimes check failed"
-    # if uvo.uvw_array.all() == uve.uvw_array.all():
-    #     print "UVW arrays match"
-    # else:
-    #     print "UVW check failed"
-    # differencing
     if mode == 'diff' or mode == 'all':
         uvd = deepcopy(uv)
         uvd.data_array = uvo.data_array - uve.data_array
@@ -133,6 +143,9 @@ def splitByTime(uv, mode='all'):
         # copy all other attributes
         for param in ['uvw_array', 'time_array', 'lst_array', 'ant_1_array', 'ant_2_array', 'baseline_array', 'Nblts', 'Ntimes']:
             setattr(uvd, param, getattr(uvo, param))
+        if checks:
+            if not(testDiff(uvo, uve, uvd, uv)):
+                return
         if mode == 'diff':
             return uvd
         else:
@@ -143,3 +156,19 @@ def splitByTime(uv, mode='all'):
         return uve
     else:
         return [uvo, uve]
+
+
+def testDiff(uvo, uve, uvd, uv):
+        # check that all parts have reasonable dimensions
+    check = True
+    for a in ['data_array', 'flag_array', 'nsample_array', 'uvw_array', 'uvw_array', 'time_array', 'lst_array', 'ant_1_array', 'ant_2_array', 'baseline_array']:
+        if not((getattr(uvo, a).shape == getattr(uve, a).shape) and (getattr(uvo, a).shape == getattr(uvd, a).shape)):
+            print "Failed on " + a
+            check = False
+    if check:
+        print "Shapes check: pass"
+    # check ratios relative to uv
+    perodd = uvo.data_array.size * 100 / uv.data_array.size
+    pereven = uve.data_array.size * 100 / uv.data_array.size
+    print "Size check: " + str(perodd) + "% odd, " + str(pereven) + "% even"
+    return True
