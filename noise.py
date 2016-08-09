@@ -3,7 +3,7 @@ import numpy as np
 from copy import deepcopy
 
 
-def splitByFreq(uv, mode='all', checks=False):
+def splitByFreq(uv, mode='all', checks=True):
     if uv.Nfreqs < 2:
         print "Not enough frequencies to split!"
         return
@@ -51,7 +51,7 @@ def splitByFreq(uv, mode='all', checks=False):
         return [uvo, uve]
 
 
-def splitByPol(uv, mode='all', checks=False):
+def splitByPol(uv, mode='all', checks=True):
     if uv.Npols < 2:
         print "Not enough polarizations to split!"
         return
@@ -97,7 +97,7 @@ def splitByPol(uv, mode='all', checks=False):
         return [uvo, uve]
 
 
-def splitByTime(uv, mode='all', checks=False):
+def splitByTime(uv, mode='all', checks=True):
     if uv.Ntimes < 2:
         print "Not enough frequencies to split!"
         return
