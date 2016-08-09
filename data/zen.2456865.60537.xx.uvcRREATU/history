@@ -1,0 +1,8 @@
+CORR-DACQ: created file.
+/usr/local/bin/correct_psa128.py zen.2456865.60537.xx.uv
+/usr/local/bin/xrfi_simple.py -a 1 --df=6 -c 0_65,377_388,510,770,840,852,913,921_922,932_934,942_1023 --combine -t 80 zen.2456865.60537.xx.uvc
+/usr/local/bin/xrfi_simple.py -a all --combine -t 80 --from_npz=zen.2456865.60537.xx.uvcRE.npz zen.2456865.60537.xx.uvcR
+DDR FILTER, DDR:/usr/local/bin/ddr_filter_coarse.py -a all -p xx,xy,yx,yy --maxbl=301 --clean=1e-3 --output=ddr --nsections=20 zen.2456865.59841.xx.uvcR zen.2456865.60537.xx.uvcRR zen.2456865.61232.xx.uvcR
+PULL ANTPOLS:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/pull_antpols.py -a 0,1,2 zen.2456865.60537.xx.uvcRRE
+/Users/jpober/src/capo/jcp/scripts/fix_anttable.py zen.2456865.60537.xx.uvcRREA
+/Users/jpober/src/capo/dcj/scripts/add_uvws.py zen.2456865.60537.xx.uvcRREAT -C psa6622_v003
