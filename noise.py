@@ -1,12 +1,19 @@
+# Python script to split a pyuvdata UVData() object into odd and even portions,
+# allowing differencing for applications such as noise assessment.
+# Author: Philip Mathieu
+# 8/9/2016
+
 from uvdata.uv import UVData
 import numpy as np
 from copy import deepcopy
 
 
 def splitByFreq(uv, mode='all', checks=True):
+    # basic checks
     if uv.Nfreqs < 2:
         print "Not enough frequencies to split!"
         return
+    # copy original data
     uvo = deepcopy(uv)
     uve = deepcopy(uv)
     # reading every other
@@ -24,9 +31,10 @@ def splitByFreq(uv, mode='all', checks=True):
         uvo.flag_array = uvo.flag_array[:, :, :-1, :]
         uvo.freq_array = uvo.freq_array[:, :-1]
         uvo.nsample_array = uvo.nsample_array[:, :, :-1, :]
+    # update frequency count
     uvo.Nfreqs = uv.Nfreqs / 2
     uve.Nfreqs = uv.Nfreqs / 2
-    # differencing
+    # differencing if selected
     if mode == 'diff' or mode == 'all':
         uvd = deepcopy(uv)
         uvd.data_array = uvo.data_array - uve.data_array
