@@ -20,4 +20,4 @@
 
 # Run a matlab script called 'foo.m' in the same directory as this batch script.
 source venv1/bin/activate
-python freq_noise.py data/psa128
+python test_noise.py data/psa128
