@@ -13,6 +13,7 @@ def splitByFreq(uv, mode='all', checks=True):
     if uv.Nfreqs < 2:
         print "Not enough frequencies to split!"
         return
+    print "Splitting by frequency"
     # copy original data
     uvo = deepcopy(uv)
     uve = deepcopy(uv)
@@ -63,6 +64,7 @@ def splitByPol(uv, mode='all', checks=True):
     if uv.Npols < 2:
         print "Not enough polarizations to split!"
         return
+    print "Splitting by polarization"
     uvo = deepcopy(uv)
     uve = deepcopy(uv)
     # reading every other
@@ -109,6 +111,7 @@ def splitByTime(uv, mode='all', checks=True):
     if uv.Ntimes < 2:
         print "Not enough frequencies to split!"
         return
+    print "Splitting by time"
     uvo = deepcopy(uv)
     uve = deepcopy(uv)
     # generate masks
