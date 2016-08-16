@@ -34,27 +34,27 @@ def splitAll(inpath, outdir, indir=False):
         if isinstance(fsplits, list):
             if not os.path.exists(outdir + 'fsplits/'):
                 os.makedirs(outdir + 'fsplits/')
-            fsplits[0].write_miriad(outdir + 'fsplits/' + path + '.odd')
-            fsplits[1].write_miriad(outdir + 'fsplits/' + path + '.even')
-            fsplits[2].write_miriad(outdir + 'fsplits/' + path + '.diff')
+            fsplits[0].write_miriad(outdir + 'fsplits/' + path + 'O')
+            fsplits[1].write_miriad(outdir + 'fsplits/' + path + 'E')
+            fsplits[2].write_miriad(outdir + 'fsplits/' + path + 'D')
         else:
             print "Skipping frequency split..."
         psplits = noise.splitByPol(uv, mode='all')
         if isinstance(psplits, list):
             if not os.path.exists(outdir + 'psplits/'):
                 os.makedirs(outdir + 'psplits/')
-            psplits[0].write_miriad(outdir + 'psplits/' + path + '.odd')
-            psplits[1].write_miriad(outdir + 'psplits/' + path + '.even')
-            psplits[2].write_miriad(outdir + 'psplits/' + path + '.diff')
+            psplits[0].write_miriad(outdir + 'psplits/' + path + 'O')
+            psplits[1].write_miriad(outdir + 'psplits/' + path + 'E')
+            psplits[2].write_miriad(outdir + 'psplits/' + path + 'D')
         else:
             print "Skipping polarization split..."
         tsplits = noise.splitByTime(uv, mode='all')
         if isinstance(tsplits, list):
             if not os.path.exists(outdir + 'tsplits/'):
                 os.makedirs(outdir + 'tsplits/')
-            tsplits[0].write_miriad(outdir + 'tsplits/' + path + '.odd')
-            tsplits[1].write_miriad(outdir + 'tsplits/' + path + '.even')
-            tsplits[2].write_miriad(outdir + 'tsplits/' + path + '.diff')
+            tsplits[0].write_miriad(outdir + 'tsplits/' + path + 'O')
+            tsplits[1].write_miriad(outdir + 'tsplits/' + path + 'E')
+            tsplits[2].write_miriad(outdir + 'tsplits/' + path + 'D')
         else:
             print "Skipping time split..."
         # this may not be necessary
