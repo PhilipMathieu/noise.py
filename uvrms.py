@@ -71,7 +71,7 @@ try:
     print "Integrating over {0} frequency channels.".format(args.freq)
 except:
     if args.freq[-3:] == 'MHz':
-        args.freq = int(math.ceil(int(float(args.freq[:-3])) / channel_width))
+        args.freq = int(math.ceil(int(1e6*float(args.freq[:-3])) / channel_width))
         print "Integrating over {0} frequency channels.".format(args.freq)
     else:
         print "Could not determine RMS length for time"
@@ -98,6 +98,7 @@ nsample_array = np.ndarray((Nbls * tsamps, Nspws, fsamps, Npols))
 # create a buffer of uvdata objects big enough to accomodate integration window
 size = int(math.ceil(float(args.times) / float(uva.Ntimes))) + 1
 uvs = UVCache(files, size)
+first_time = True
 for blt in trange(Nbls * tsamps):
     for spw in range(Nspws):
         for f in range(fsamps):
@@ -107,5 +108,10 @@ for blt in trange(Nbls * tsamps):
                 rms_array[blt, spw, f, pol] = np.sqrt(np.sum(np.square(np.real(
                     data[0][np.where(data[1] == 0)]))) / (data[0][np.where(data[1] == 0)].size - 1))
                 nsample_array[blt, spw, f, pol] = data[
-                    1].size - np.count_nonzero(data[1])
+                    0][np.where(data[1] == 0)].size / Nbls
+                if first_time == True:
+                    print data[0].shape
+                    print data[1]
+                    print data[0][np.where(data[1] == 0)].size
+                    first_time = False
 np.savez(args.out, rms_array, nsample_array)
