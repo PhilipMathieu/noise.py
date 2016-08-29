@@ -71,7 +71,8 @@ try:
     print "Integrating over {0} frequency channels.".format(args.freq)
 except:
     if args.freq[-3:] == 'MHz':
-        args.freq = int(math.ceil(int(1e6*float(args.freq[:-3])) / channel_width))
+        args.freq = int(
+            math.ceil(int(1e6 * float(args.freq[:-3])) / channel_width))
         print "Integrating over {0} frequency channels.".format(args.freq)
     else:
         print "Could not determine RMS length for time"
@@ -93,25 +94,28 @@ if Nfreqs < args.freq:
 tsamps = int(Ntimes / args.times)
 fsamps = int(Nfreqs / args.freq)
 # instantiate arrays for storing RMSE and number of samples per RMS value
-rms_array = np.ndarray((Nbls * tsamps, Nspws, fsamps, Npols))
-nsample_array = np.ndarray((Nbls * tsamps, Nspws, fsamps, Npols))
+rms_array = np.ndarray((Nbls, tsamps, Nspws, fsamps, Npols))
+nsample_array = np.ndarray((Nbls, tsamps, Nspws, fsamps, Npols))
 # create a buffer of uvdata objects big enough to accomodate integration window
 size = int(math.ceil(float(args.times) / float(uva.Ntimes))) + 1
 uvs = UVCache(files, size)
 first_time = True
-for blt in trange(Nbls * tsamps):
+for t in trange(tsamps):
     for spw in range(Nspws):
-        for f in range(fsamps):
+        for f in trange(fsamps):
             for pol in range(Npols):
                 data = uvs.get_sub_array(
-                    [blt * args.times, spw, f * args.freq, pol], [Nbls * args.times, 1, args.freq, 1])
-                rms_array[blt, spw, f, pol] = np.sqrt(np.sum(np.square(np.real(
-                    data[0][np.where(data[1] == 0)]))) / (data[0][np.where(data[1] == 0)].size - 1))
-                nsample_array[blt, spw, f, pol] = data[
+                    [Nbls*t * args.times, spw, f * args.freq, pol], [Nbls * args.times, 1, args.freq, 1])
+                # work around to handle the raveling effect of indexing with
+                # np.where
+                rsqr = np.square(np.real(data[0]))
+                rsqr[np.where(data[1] == 0)] = 0
+                rms_array[:,t, spw, f, pol] = np.sum(np.reshape(np.sqrt(np.sum(
+                    rsqr, axis=(1, 2, 3)) / (data[0][np.where(data[1] == 0)].size - 1)), (Nbls, args.times)), axis=1)
+                nsample_array[:,t, spw, f, pol] = data[
                     0][np.where(data[1] == 0)].size / Nbls
                 if first_time == True:
-                    print data[0].shape
-                    print data[1]
-                    print data[0][np.where(data[1] == 0)].size
+                    # add debugging code here (like print statements)
+
                     first_time = False
-np.savez(args.out, rms_array, nsample_array)
+np.savez(args.out, rms_array=rms_array, nsample_array=nsample_array)
