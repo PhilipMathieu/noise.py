@@ -133,6 +133,7 @@ for t in trange(tsamps):
                 nsample_array[:, t, spw, f, pol] = data[
                     0][np.where(data[1] == 0)].size / Nbls
                 time_array[t] = data[2]
+                rms_array[nsample_array==0]=None
                 freq_array[f] = data[3]
                 if first_time == True:
                     # add debugging code here (like print statements)
