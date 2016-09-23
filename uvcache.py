@@ -107,7 +107,7 @@ class UVCache():
                     0: shape[0] % self.Nblts, cursor[1]: cursor[1] + shape[1], cursor[2]: cursor[2] + shape[2], cursor[3]: cursor[3] + shape[3]]
                 flag[shape[0] - self.Nblts * file_cnt - first_block_len:, :, :, :] = self.objs[end_file % self.size].flag_array[
                     0: shape[0] % self.Nblts, cursor[1]: cursor[1] + shape[1], cursor[2]: cursor[2] + shape[2], cursor[3]: cursor[3] + shape[3]]
-        return [data, flag, self.objs[beg_file % self.size].time_array[cursor[0] % self.Nblts], self.objs[beg_file % self.size].freq_array[cursor[1], cursor[2]]]
+        return [data, flag, self.objs[beg_file % self.size].time_array[cursor[0] % self.Nblts], self.objs[beg_file % self.size].freq_array[cursor[1], cursor[2]], self.objs[beg_file % self.size].lst_array[cursor[0] % self.Nblts]]
 
     def get_uvp(self, uvp):
         try:
