@@ -152,7 +152,7 @@ def splitByTime(uv, mode='all', checks=True):
         uvd.flag_array = np.logical_or(uvo.flag_array, uve.flag_array)
         uvd.nsample_array = uvo.nsample_array + uve.nsample_array
         # copy all other attributes
-        for param in ['uvw_array', 'time_array', 'lst_array', 'ant_1_array', 'ant_2_array', 'baseline_array', 'Nblts', 'Ntimes']:
+        for param in ['uvw_array', 'time_array', 'lst_array', 'ant_1_array', 'ant_2_array', 'baseline_array', 'Nblts', 'Ntimes', 'lst_array']:
             setattr(uvd, param, getattr(uvo, param))
         if checks:
             if not(testDiff(uvo, uve, uvd, uv)):

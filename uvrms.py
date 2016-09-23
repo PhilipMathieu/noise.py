@@ -105,6 +105,7 @@ fsamps = int(Nfreqs / args.freq)
 rms_array = np.ndarray((Nbls, tsamps, Nspws, fsamps, Npols))
 nsample_array = np.ndarray((Nbls, tsamps, Nspws, fsamps, Npols))
 time_array = np.ndarray((tsamps,))
+lst_array = np.ndarray((tsamps,))
 freq_array = np.ndarray((fsamps,))
 print "Output dimensions:{0}".format(rms_array.shape)
 # create a buffer of uvdata objects big enough to accomodate integration window
@@ -133,10 +134,11 @@ for t in trange(tsamps):
                 nsample_array[:, t, spw, f, pol] = data[
                     0][np.where(data[1] == 0)].size / Nbls
                 time_array[t] = data[2]
-                rms_array[nsample_array==0]=None
+                rms_array[nsample_array == 0] = None
                 freq_array[f] = data[3]
-                if first_time == True:
+                lst_array[t] = data[4]
+                if first_time is True:
                     # add debugging code here (like print statements)
                     first_time = False
 np.savez(args.out, rms_array=rms_array, nsample_array=nsample_array, header=header, time_array=time_array,
-         freq_array=freq_array, baseline_array=baseline_array, spw_array=spw_array, polarization_array=polarization_array)
+         freq_array=freq_array, baseline_array=baseline_array, spw_array=spw_array, polarization_array=polarization_array, lst_array=lst_array)
