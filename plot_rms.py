@@ -28,12 +28,23 @@ def raw_plot(rms, bl):
 
 
 def meanvst(data, outfile):
+    fig, t_plt = plt.subplots()
+    lst_plt = t_plt.twiny()
     for spw in range(data['rms_array'].shape[2]):
         for pol in range(data['rms_array'].shape[4]):
-            plt.scatter(data['time_array'], np.nanmean(np.nanmean(less_cross(data), axis=0),axis=2)[:,spw,pol])
-    plt.title('Mean RMSE vs Time, All SPW and Pol')
-    plt.xlabel('Time')
-    plt.ylabel('Raw RMSE')
+            t_plt.scatter(data['time_array'], np.nanmean(np.nanmean(less_cross(data), axis=0),axis=2)[:,spw,pol])
+            lst_plt.scatter(data['lst_array'], np.nanmean(np.nanmean(less_cross(data), axis=0),axis=2)[:,spw,pol], alpha=0)
+    t_max = np.max(data['time_array'])+0.05*(np.max(data['time_array'])-np.min(data['time_array']))
+    t_min = np.min(data['time_array'])-0.05*(np.max(data['time_array'])-np.min(data['time_array']))
+    lst_max = np.max(data['lst_array'])+0.05*(np.max(data['lst_array'])-np.min(data['lst_array']))
+    lst_min = np.min(data['lst_array'])-0.05*(np.max(data['lst_array'])-np.min(data['lst_array']))
+    t_plt.set_xlabel('Time')
+    t_plt.set_ylabel('Raw RMSE')
+    t_plt.set_xlim(t_min,t_max)
+    lst_plt.set_xlim(lst_min,lst_max)
+    lst_plt.set_xlabel('LST')
+    lst_plt.set_title('Mean RMSE vs Time, All SPW and Pol', y=1.1)
+    fig.tight_layout()
     plt.savefig(outfile, format='png', bbox='tight')
     plt.clf()
 
@@ -45,6 +56,7 @@ def meanvsf(data, outfile):
     plt.title('Mean RMSE vs Frequency, All SPW and Pol')
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('Raw RMSE')
+    plt.gcf().tight_layout()
     plt.savefig(outfile, format='png', bbox='tight')
     plt.clf()
 
@@ -62,6 +74,7 @@ def meanwfall(data, outfile):
     plt.ylabel('Time')
     cbar = plt.colorbar()
     cbar.ax.set_ylabel('Raw RMSE', rotation=270)
+    plt.gcf().tight_layout()
     plt.savefig(outfile, format='png', bbox='tight')
     plt.clf()
 
